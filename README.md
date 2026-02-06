@@ -1,2 +1,5 @@
-# CCA: CONTINUITY CARE ASSISTANT
-Continuity Care Assistant
+# Continuity Care Assistant (CCA)
+
+> **MedGemma Impact Challenge Submission**
+> 
+> An AI-powered clinical decision support tool that surfaces "Don't Miss" alerts by synthesizing longitudinal patient data across clinical notes, labs, imaging, and medications.
