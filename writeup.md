@@ -5,13 +5,14 @@ CCA: Continuity Care Assistant
 J.D. Laurence-Chasen. 
 
 ### Problem statement [Your answer to the “Problem domain” & “Impact potential” criteria] 
-Primary care physicians have an average of 13.5 minutes per patient visit but need to synthesize information from imaging, tests, and average of XX+ EHR pages per patient. Critical connections between imaging findings, symptoms mentioned months ago, and long-term lab trends are frequently missed due to the sheer volume of data and the extreme time constraints place on doctors. An embedded AI system that provides doctors with “Don’t Miss” alerts for suspected connections between these various data streams 
+Primary care physicians have an average of 13.5 minutes per patient visit but need to synthesize information from imaging, tests, and average of XX+ EHR pages per patient. Critical connections between imaging findings, symptoms mentioned months ago, and long-term lab trends are frequently missed due to the sheer volume of data and the extreme time constraints place on doctors.
 
 Direct quotes from interviewed primary care providers support this dire need:
 1) ('There is just so much data in [a patient's] chart. There's no way to review all of it before an appointment.') [M.L.W, M.D., University of Washington]
 2) (Quote) [A.J.R. M.D., Oregon Health and Sciences University]
 3) (Quote) [A.S., D.O., University of Washington]
 
+Impact potential sentence or two: xxx
 
 ### Overall solution: [Your answer to “Effective use of HAI-DEF models” criterion]
 I propose CCA, the Continuity Care Assistant, a multimodal system that ultimately provides primary care physicians with a trustworthy “second look” over all of the patient charts, medical images, and labs. 
@@ -26,26 +27,7 @@ I propose CCA, the Continuity Care Assistant, a multimodal system that ultimatel
 ---
 ## Technical Architecture
 
-### HAI-DEF Models Used
-
-| Stage | Model | Parameters | Purpose |
-|-------|-------|------------|---------|
-| **1a. Note Extraction** | MedGemma 1.5 4B | 4B | Extract symptoms, findings, follow-ups from clinical notes |
-| **1b. Image Analysis** | CXR-Foundation | — | Detect nodules, masses in chest X-rays |
-| **1b. Image Analysis** | MedSigLIP | 0.9B | General medical image embeddings |
-| **1c. Lab Analysis** | (Deterministic) | — | Trend detection, clinical flags |
-| **2. Synthesis** | MedGemma 1.5 4B | 4B | Cross-modal reasoning, alert generation |
-| **Safety** | (Deterministic) | — | Drug-disease contraindications |
-
 ### Why MedGemma 1.5 4B for Both Extraction AND Synthesis?
-
-The January 2025 MedGemma 1.5 release specifically optimizes the **4B model** (not 27B) for our exact use case:
-
-| Metric | MedGemma 1 4B | MedGemma 1.5 4B | Improvement |
-|--------|---------------|-----------------|-------------|
-| EHRQA (EHR question-answering) | 68% | **90%** | +22% |
-| Lab report extraction (F1) | 60% | **78%** | +18% |
-| MedQA (medical reasoning) | 64% | **69%** | +5% |
 
 Additionally, MedGemma 1.5 4B adds support for **longitudinal medical imaging** (chest X-ray time series), making it ideal for tracking patterns across visits.
 
@@ -74,11 +56,6 @@ Additionally, MedGemma 1.5 4B adds support for **longitudinal medical imaging** 
 - **Alert fatigue**: High-precision rules + severity levels prevent over-alerting
 - **Privacy**: Open-weight models run on-premise; no PHI leaves the network
 - **Physician trust**: Evidence chains let clinicians verify the reasoning
-
-
-### Why MedGemma 1.5 4B?
-
-MedGemma 1.5 4B is uniquely suited for CCA because it handles **all our data types** in a single model:
-
-> **One model, two stages.** MedGemma 1.5 4B extracts structured data from all sources, then synthesizes cross-modal patterns into actionable alerts.
 ---
+
+! Note that other models could be used in this workflow--it's the overall flow that's important. MedGemma 1.5 is the synthesizer first and foremost. The workflow could be strengthened if MedGemma dispatched other model (i.e., agentically) if there was something suspcious on an X-ray time serioues. 
