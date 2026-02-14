@@ -1,12 +1,12 @@
 ### Project name
 **CCA: Continuity Care Assistant**
 
-### Your team
-J.D. Laurence-Chasen — biomedical engineer and software developer. Solo contributor responsible for clinical problem identification, system design, implementation, and evaluation.
+### Team
+J.D. Laurence-Chasen — Research scientist, software developer, and integrative biology PhD. Solo contributor responsible for clinical problem identification, system design, implementation, and evaluation.
 
 ### Problem statement
 
-Primary care physicians (PCPs) face an impossible information synthesis challenge. With an average of just 13.5 minutes per patient visit, they must make sense of 100+ pages of EHR data — clinical notes, imaging reports, lab results, and medication lists — often accumulated across years of care by multiple providers. Critical connections get missed: a hemoglobin that has been quietly declining over three visits, a lung nodule flagged for follow-up CT that was never ordered, or an NSAID prescribed by a specialist for a patient with documented chronic kidney disease.
+Primary care providers (PCPs) face an impossible information synthesis challenge. With an average of just 13.5 minutes per patient visit, they must make sense of 100+ pages of EHR data — clinical notes, imaging reports, lab results, and medication lists — often accumulated across years of care by multiple providers. Critical connections get missed: a hemoglobin that has been quietly declining over three visits, a lung nodule flagged for follow-up CT that was never ordered, or an NSAID prescribed by a specialist for a patient with documented chronic kidney disease.
 
 These are not errors of competence. They are errors of information overload.
 
@@ -50,7 +50,7 @@ The result is a concise set of actionable alerts — each with a severity level,
 - *James Morrison (64M):* A left hilar mass found incidentally on pre-op CXR with no follow-up CT ever completed. CCA's longitudinal comparison confirms the mass is new by comparing against a normal CXR from 15 months prior — exactly the kind of continuity gap it is designed to close.
 - *Dorothy Williams (72F):* NSAID prescribed by orthopedics despite documented CKD Stage 3a, caught by deterministic safety rules with supporting context from MedGemma about accelerating renal decline.
 
-Pipeline outputs are evaluated against clinician-verified ground truth using keyword-overlap metrics (precision, recall, F1) across extraction, image analysis, longitudinal comparison, and alert synthesis stages.
+Pipeline outputs are evaluated against clinician-verified ground truth using two complementary checks: (1) a **severity threshold** test confirming the model flags each concern at or above the expected severity level, and (2) an **LLM-as-judge** assessment in which MedGemma itself compares the generated alert against the reference, returning a binary YES/NO verdict on whether the core clinical concern was captured without critical omissions.
 
 **Deployment considerations.** At 4B parameters, MedGemma 1.5 can run on a single GPU — making on-premise deployment in hospital data centers feasible without sending patient data to external APIs. The modular pipeline design also allows individual stages to be swapped or extended: future versions could incorporate agentic dispatch (e.g., routing suspicious imaging findings to a specialized model), PDF/chart ingestion, or medication reconciliation by cross-referencing note mentions against the active medication list.
 
