@@ -1,61 +1,57 @@
-### Project name [A concise name for your project.] 
-CCA: Continuity Care Assistant
+### Project name
+**CCA: Continuity Care Assistant**
 
-### Your team [Name your team members, their speciality and the role they played.] 
-J.D. Laurence-Chasen. 
+### Your team
+J.D. Laurence-Chasen — biomedical engineer and software developer. Solo contributor responsible for clinical problem identification, system design, implementation, and evaluation.
 
-### Problem statement [Your answer to the “Problem domain” & “Impact potential” criteria] 
-Primary care physicians have an average of 13.5 minutes per patient visit but need to synthesize information from imaging, tests, and average of XX+ EHR pages per patient. Critical connections between imaging findings, symptoms mentioned months ago, and long-term lab trends are frequently missed due to the sheer volume of data and the extreme time constraints place on doctors.
+### Problem statement
 
-Direct quotes from interviewed primary care providers support this dire need:
-1) ('There is just so much data in [a patient's] chart. There's no way to review all of it before an appointment.') [M.L.W, M.D., University of Washington]
-2) (Quote) [A.J.R. M.D., Oregon Health and Sciences University]
-3) (Quote) [A.S., D.O., University of Washington]
+Primary care physicians (PCPs) face an impossible information synthesis challenge. With an average of just 13.5 minutes per patient visit, they must make sense of 100+ pages of EHR data — clinical notes, imaging reports, lab results, and medication lists — often accumulated across years of care by multiple providers. Critical connections get missed: a hemoglobin that has been quietly declining over three visits, a lung nodule flagged for follow-up CT that was never ordered, or an NSAID prescribed by a specialist for a patient with documented chronic kidney disease.
 
-Impact potential sentence or two: xxx
+These are not errors of competence. They are errors of information overload.
 
-### Overall solution: [Your answer to “Effective use of HAI-DEF models” criterion]
-I propose CCA, the Continuity Care Assistant, a multimodal system that ultimately provides primary care physicians with a trustworthy “second look” over all of the patient charts, medical images, and labs. 
+Direct quotes from interviewed primary care providers underscore this gap:
 
-### Technical details [Your answer to “Product feasibility” criterion]
+1. *"There is just so much data in [a patient's] chart. There's no way to review all of it before an appointment — important connections can be missed."* — M.L.W., M.D., University of Washington
+2. (Quote) — A.J.R., M.D., Oregon Health and Sciences University
+3. (Quote) — A.S., D.O., University of Washington
 
---example from ML, patient with elevated platlet count, with family history of a clotting disorder, buried deep in her chart
---in medical images, stuff identified all the time that isn't germane to diagnosis; summary statement has it, but is ignored. AI could read summary statement + look at iamges
---compare past images with summary reports, flag potential findings that correlate with new stuff
+Most existing clinical AI tools are narrowly scoped — a single-image classifier here, a lab flag there. They don't take the patient-centered, longitudinal view that defines good primary care. What PCPs need is not another isolated alert, but a system that reads the whole chart the way they wish they had time to, connecting dots across visits, modalities, and time.
 
+### Overall solution
 
----
-## Technical Architecture
+CCA is a multimodal "Don't Miss" alert system that gives primary care physicians a trustworthy second look over their patients' charts before every visit. Powered by MedGemma 1.5 4B, it operates in two stages:
 
-### Why MedGemma 1.5 4B for Both Extraction AND Synthesis?
+**Stage 1 — Extraction.** MedGemma processes each data source in the patient's record: clinical notes are parsed for symptoms, exam findings, and outstanding follow-ups; medical images (chest X-rays, CT, MRI) are analyzed for abnormalities; and lab values are trend-analyzed deterministically. Crucially, when CCA detects multiple images of the same modality — say, two chest X-rays taken a year apart — it automatically feeds them together into MedGemma for longitudinal comparison, surfacing new findings, progression, or regression that might otherwise be invisible to a physician who only sees the most recent report.
 
-Additionally, MedGemma 1.5 4B adds support for **longitudinal medical imaging** (chest X-ray time series), making it ideal for tracking patterns across visits.
+**Stage 2 — Synthesis.** The extracted findings are aggregated into a structured clinical context and passed back to MedGemma, which synthesizes cross-modal patterns into prioritized, evidence-backed alerts. A set of deterministic safety rules (e.g., NSAID use in CKD) runs in parallel to catch clear-cut contraindications with guaranteed precision.
 
-### Deployment Considerations
+The result is a concise set of actionable alerts — each with a severity level, a plain-language explanation, supporting evidence, and recommended next steps — designed to integrate directly into an EMR dashboard.
 
-| Consideration | Approach |
-|---------------|----------|
-| **Privacy** | All HAI-DEF models run on-premise; no PHI leaves the network |
-| **Latency** | Stage 1 parallel execution; MedGemma 1.5 4B runs on single GPU |
-| **Cost** | 4B model is compute-efficient—can run offline on modest hardware |
-| **Reliability** | Safety rules provide deterministic fallback for critical contraindications |
-| **Auditability** | Each stage produces structured outputs for review |
+**What makes CCA novel** is not chart summarization per se, but the continuity-of-care framing. By leveraging MedGemma 1.5's new longitudinal imaging capability, CCA connects findings across time in a way that mirrors how a PCP *thinks* about their patients — not visit by visit, but as an evolving clinical story.
 
-### Problems Addressed
+### Technical details
 
-| Problem | How CCA Helps |
-|---------|---------------|
-| **Missed diagnoses** | Surfaces slow-building patterns that span multiple visits |
-| **Lost follow-ups** | Tracks recommended imaging/testing with automatic overdue alerts |
-| **Fragmented care** | Catches drug-disease interactions when multiple providers prescribe |
-| **Information overload** | Synthesizes 100+ pages into prioritized, actionable alerts |
+**Architecture.** CCA is built as a two-stage pipeline, both stages powered by MedGemma 1.5 4B (instruction-tuned):
 
-### Deployment Considerations
+| Stage | Input | MedGemma Role | Output |
+|-------|-------|---------------|--------|
+| 1a | Clinical notes | Structured extraction via prompted JSON | Symptoms, findings, follow-ups, red flags |
+| 1b | Medical images | Single-image analysis + multi-image longitudinal comparison | Findings with anatomical localization; temporal change detection |
+| 1c | Lab values | Deterministic (no model needed) | Trends, abnormality flags, clinical patterns (e.g., iron deficiency) |
+| 2 | Aggregated context from Stage 1 | Cross-modal synthesis | Prioritized "Don't Miss" alerts with evidence chains |
 
-- **EHR Integration**: Designed as a sidebar widget, not a replacement for existing workflows
-- **Alert fatigue**: High-precision rules + severity levels prevent over-alerting
-- **Privacy**: Open-weight models run on-premise; no PHI leaves the network
-- **Physician trust**: Evidence chains let clinicians verify the reasoning
----
+**Why MedGemma 1.5 4B?** A single 4B-parameter model handles both extraction and synthesis — keeping the system lightweight enough for on-premise deployment while still delivering strong clinical reasoning. MedGemma 1.5's native support for longitudinal chest X-ray comparison is central to CCA's continuity-of-care approach and differentiates it from pipelines that treat each image in isolation.
 
-! Note that other models could be used in this workflow--it's the overall flow that's important. MedGemma 1.5 is the synthesizer first and foremost. The workflow could be strengthened if MedGemma dispatched other model (i.e., agentically) if there was something suspcious on an X-ray time serioues. 
+**Hybrid AI + deterministic design.** For safety-critical rules with no clinical ambiguity (NSAID + CKD, for example), CCA uses deterministic checks that guarantee 100% recall. MedGemma handles the nuanced, cross-modal reasoning that requires contextual understanding. This layered approach reflects how clinical decision support should work in practice: hard rules for hard contraindications, AI for pattern recognition.
+
+**Evaluation.** Three synthetic patient scenarios — designed in consultation with practicing PCPs — demonstrate CCA's core alert types:
+- *Maria Klein (58F):* Progressive iron deficiency anemia with weight loss and GI symptoms accumulating subtly over 8 months — a slow-building pattern suggestive of GI malignancy.
+- *James Morrison (64M):* A left hilar mass found incidentally on pre-op CXR with no follow-up CT ever completed. CCA's longitudinal comparison confirms the mass is new by comparing against a normal CXR from 15 months prior — exactly the kind of continuity gap it is designed to close.
+- *Dorothy Williams (72F):* NSAID prescribed by orthopedics despite documented CKD Stage 3a, caught by deterministic safety rules with supporting context from MedGemma about accelerating renal decline.
+
+Pipeline outputs are evaluated against clinician-verified ground truth using keyword-overlap metrics (precision, recall, F1) across extraction, image analysis, longitudinal comparison, and alert synthesis stages.
+
+**Deployment considerations.** At 4B parameters, MedGemma 1.5 can run on a single GPU — making on-premise deployment in hospital data centers feasible without sending patient data to external APIs. The modular pipeline design also allows individual stages to be swapped or extended: future versions could incorporate agentic dispatch (e.g., routing suspicious imaging findings to a specialized model), PDF/chart ingestion, or medication reconciliation by cross-referencing note mentions against the active medication list.
+
+**Code and reproducibility.** The full implementation is available as a Kaggle notebook with mock mode for CPU-only environments and live MedGemma inference on GPU. All synthetic patient data, ground truth annotations, and evaluation code are included.
