@@ -2,21 +2,19 @@
 **CCA: Continuity Care Assistant**
 
 ### Team
-J.D. Laurence-Chasen — Research scientist, software developer, and integrative biology PhD. Solo contributor responsible for clinical problem identification, system design, implementation, and evaluation.
+J.D. Laurence-Chasen — Research scientist and software developer. Solo contributor responsible for clinical problem identification, system design, implementation, and evaluation.
 
 ### Problem statement
 
-Primary care providers (PCPs) face an impossible information synthesis challenge. With an average of just 13.5 minutes per patient visit, they must make sense of 100+ pages of EHR data — clinical notes, imaging reports, lab results, and medication lists — often accumulated across years of care by multiple providers. Critical connections get missed: a hemoglobin that has been quietly declining over three visits, a lung nodule flagged for follow-up CT that was never ordered, or an NSAID prescribed by a specialist for a patient with documented chronic kidney disease.
+Primary care providers (PCPs) face an impossible information synthesis challenge. With an average of just 13.5 minutes per patient visit, they must make sense of 100+ pages of EHR data — clinical notes, imaging reports, lab results, and medication lists — often accumulated across years of care by multiple providers [ref]. Critical connections get missed: a hemoglobin that has been quietly declining over three visits, a lung nodule flagged for follow-up CT that was never ordered, or an NSAID prescribed by a specialist for a patient with documented chronic kidney disease.
 
 These are not errors of competence. They are errors of information overload.
 
 Direct quotes from interviewed primary care providers underscore this gap:
 
-1. *"There is just so much data in [a patient's] chart. There's no way to review all of it before an appointment — important connections can be missed."* — M.L.W., M.D., University of Washington
-2. (Quote) — A.J.R., M.D., Oregon Health and Sciences University
-3. (Quote) — A.S., D.O., University of Washington
+*"There is just so much data in [a patient's] chart. There's no way to review all of it before an appointment — important connections can be missed."* — M.L.W., M.D., University of Washington
 
-Most existing clinical AI tools are narrowly scoped — a single-image classifier here, a lab flag there. They don't take the patient-centered, longitudinal view that defines good primary care. What PCPs need is not another isolated alert, but a system that reads the whole chart the way they wish they had time to, connecting dots across visits, modalities, and time.
+Most existing clinical AI tools are either too narrowly scoped — a single-image classifier here, a lab flag there - or are not ready to integrate into existing clinical workflows. They don't take the patient-centered, longitudinal view that defines good primary care. What PCPs need is not another isolated alert, but a system that reads the whole chart the way they wish they had time to, connecting dots across visits, modalities, and time, in a way that seamlessly integrates into the EMR.
 
 ### Overall solution
 
