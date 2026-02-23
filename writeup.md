@@ -6,15 +6,15 @@ J.D. Laurence-Chasen — Research scientist and software developer. Solo contrib
 
 ### Problem statement
 
-Primary care providers (PCPs) face an impossible information synthesis challenge. With an average of just 13.5 minutes per patient visit, they must make sense of 100+ pages of EHR data — clinical notes, imaging reports, lab results, and medication lists — often accumulated across years of care by multiple providers [ref]. Critical connections get missed: a hemoglobin that has been quietly declining over three visits, a lung nodule flagged for follow-up CT that was never ordered, or an NSAID prescribed by a specialist for a patient with documented chronic kidney disease.
+Primary care providers (PCPs) face an impossible information synthesis challenge. With an average of just 13.5 minutes per patient visit, they must make sense of 100+ pages of EHR data — clinical notes, imaging reports, lab results, and medication lists — often accumulated across years of care by multiple providers [1]. Critical connections get missed: a hemoglobin that has been quietly declining over three visits, a lung nodule flagged for follow-up CT that was never ordered, or an NSAID prescribed by a specialist for a patient with documented chronic kidney disease.
 
-These are not errors of competence. They are errors of information overload.
+Direct quotes from primary care providers underscore this misalignment:
 
-Direct quotes from interviewed primary care providers underscore this gap:
+* *"There is just so much data in [a patient's] chart. There's no way to review all of it before an appointment — important connections can be missed."* — M.L.W., MD, University of Washington Medicine
 
-*"There is just so much data in [a patient's] chart. There's no way to review all of it before an appointment — important connections can be missed."* — M.L.W., M.D., University of Washington
+* *"Care is fragmented, and primary care has to make sense of many different moving pieces provide quality care. It’s about time we had an AI assistant that connected the dots for both doctors and patients."* - A.S., DO, University of Washington Medicine
 
-Most existing clinical AI tools are either too narrowly scoped — a single-image classifier here, a lab flag there - or are not ready to integrate into existing clinical workflows. They don't take the patient-centered, longitudinal view that defines good primary care. What PCPs need is not another isolated alert, but a system that reads the whole chart the way they wish they had time to, connecting dots across visits, modalities, and time, in a way that seamlessly integrates into the EMR.
+Most existing clinical AI tools are either too narrowly scoped — a single-image classifier here, a lab flag there - or are not ready to integrate into existing clinical workflows. They don't take the patient-centered, longitudinal view that defines good primary care. What PCPs need is not another isolated alert, but a system that reads the whole chart the way they wish they had time to — connecting dots across visits, modalities, and time — in a way that seamlessly integrates into the EMR.
 
 ### Overall solution
 
@@ -27,6 +27,8 @@ CCA is a multimodal "Don't Miss" alert system that gives primary care physicians
 The result is a concise set of actionable alerts — each with a severity level, a plain-language explanation, supporting evidence, and recommended next steps — designed to integrate directly into an EMR dashboard.
 
 **What makes CCA novel** is not chart summarization per se, but the continuity-of-care framing. By leveraging MedGemma 1.5's new longitudinal imaging capability, CCA connects findings across time in a way that mirrors how a PCP *thinks* about their patients — not visit by visit, but as an evolving clinical story.
+
+At scale, tools like CCA represent a meaningful shift in how primary care can work: not by replacing physician judgment, but by ensuring that critical signals are never silently lost in the data. For the millions of patients with complex, chronic, or evolving conditions — a growing share of every primary care panel — this translates to earlier diagnoses, fewer preventable adverse events, and care that genuinely keeps pace with a patient's health over time.
 
 ### Technical details
 
@@ -53,3 +55,7 @@ Pipeline outputs are evaluated against clinician-verified ground truth using two
 **Deployment considerations.** At 4B parameters, MedGemma 1.5 can run on a single GPU — making on-premise deployment in hospital data centers feasible without sending patient data to external APIs. The modular pipeline design also allows individual stages to be swapped or extended: future versions could incorporate agentic dispatch (e.g., routing suspicious imaging findings to a specialized model), PDF/chart ingestion, or medication reconciliation by cross-referencing note mentions against the active medication list.
 
 **Code and reproducibility.** The full implementation is available as a Kaggle notebook with mock mode for CPU-only environments and live MedGemma inference on GPU. All synthetic patient data, ground truth annotations, and evaluation code are included.
+s
+**References**
+
+[1] Tai-Seale M, McGuire TG, Zhang W. Time allocation in primary care office visits. Health Serv Res. 2007 Oct;42(5):1871-94. doi: 10.1111/j.1475-6773.2006.00689.x. PMID: 17850524; PMCID: PMC2254573.
